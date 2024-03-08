@@ -1,13 +1,6 @@
 #include "Entry.h"
 #include "Global.h"
-#include <fmt/format.h>
-#include <functional>
-#include <ll/api/Config.h>
-#include <ll/api/io/FileUtils.h>
-#include <ll/api/plugin/NativePlugin.h>
-#include <ll/api/plugin/PluginManagerRegistry.h>
-#include <memory>
-#include <stdexcept>
+
 ll::Logger logger(PLUGIN_NAME);
 
 namespace change_this {
@@ -44,7 +37,6 @@ auto getSelfPluginInstance() -> ll::plugin::NativePlugin& {
     if (!selfPluginInstance) {
         throw std::runtime_error("selfPluginInstance is null");
     }
-
     return *selfPluginInstance;
 }
 

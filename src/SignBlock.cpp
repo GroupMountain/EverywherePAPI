@@ -120,7 +120,6 @@ LL_TYPE_INSTANCE_HOOK(
 void enable() {
     ll::memory::HookRegistrar<SignBlockTickHook, ChangeSignBlockHook, BlockActorDataPacketHook>().hook();
     initSchedule();
-    logger.warn("enbaled");
 }
 
 void disable() {
