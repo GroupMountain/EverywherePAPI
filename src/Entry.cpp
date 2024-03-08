@@ -18,46 +18,23 @@ std::unique_ptr<std::reference_wrapper<ll::plugin::NativePlugin>>
     selfPluginInstance; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 auto disable(ll::plugin::NativePlugin& /*self*/) -> bool {
-    logger.info("disabling...");
-
-    // Your code here.
-
-    logger.info("disabled");
-
+    SignBlockPAPI::disable();
     return true;
 }
 
 auto enable(ll::plugin::NativePlugin& /*self*/) -> bool {
-    logger.info("enabling...");
-
-    logger.info("enabled");
-
+    SignBlockPAPI::enable();
     return true;
 }
 
 auto load(ll::plugin::NativePlugin& self) -> bool {
-    logger.info("loading...");
-
     selfPluginInstance = std::make_unique<std::reference_wrapper<ll::plugin::NativePlugin>>(self);
-
-    // Your code here.
-
-    logger.info("loaded");
-
+    initConfig();
     return true;
 }
 
 auto unload(ll::plugin::NativePlugin& self) -> bool {
-    auto& logger = self.getLogger();
-
-    logger.info("unloading...");
-
     selfPluginInstance.reset();
-
-    // Your code here.
-
-    logger.info("unloaded");
-
     return true;
 }
 
