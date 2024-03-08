@@ -56,6 +56,23 @@ void updateAllClientSignBlocks() {
     }
 }
 
+void resendAllSignBlocks() {
+    for (auto& data : mSignBlockActorMap) {
+        auto bs  = GMLIB_Level::getLevel()->getBlockSource(data.second);
+        auto pos = data.first;
+        auto ba  = bs->getBlockEntity(pos);
+        if (ba) {
+            auto               signblock = (SignBlockActor*)ba;
+            auto               nbt       = GMLIB_CompoundTag::getFromBlockActor(signblock);
+            GMLIB_BinaryStream bs;
+            bs.writeBlockPos(pos);
+            bs.writeCompoundTag(*nbt);
+            GMLIB::Server::NetworkPacket<56> pkt(bs.getAndReleaseData());
+            pkt.sendToClients();
+        }
+    }
+}
+
 void initSchedule() {
     mUpdateTask = mScheduler.add<ll::schedule::RepeatTask>(20_tick, [] {
         updateAllClientSignBlocks();
@@ -127,8 +144,9 @@ void enable() {
 
 void disable() {
     if (mIsEnabled) {
-        ll::memory::HookRegistrar<SignBlockTickHook, ChangeSignBlockHook, BlockActorDataPacketHook>().unhook();
         removeSchedule();
+        ll::memory::HookRegistrar<SignBlockTickHook, ChangeSignBlockHook, BlockActorDataPacketHook>().unhook();
+        resendAllSignBlocks();
     }
 }
 
