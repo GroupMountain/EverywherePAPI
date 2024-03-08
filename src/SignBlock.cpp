@@ -10,6 +10,8 @@ ll::schedule::GameTickScheduler mScheduler;
 
 std::shared_ptr<ll::schedule::task::Task<ll::chrono::GameTickClock>> mUpdateTask = nullptr;
 
+bool mIsEnabled = false;
+
 LL_TYPE_INSTANCE_HOOK(
     SignBlockTickHook,
     ll::memory::HookPriority::Normal,
@@ -120,11 +122,14 @@ LL_TYPE_INSTANCE_HOOK(
 void enable() {
     ll::memory::HookRegistrar<SignBlockTickHook, ChangeSignBlockHook, BlockActorDataPacketHook>().hook();
     initSchedule();
+    mIsEnabled = true;
 }
 
 void disable() {
-    ll::memory::HookRegistrar<SignBlockTickHook, ChangeSignBlockHook, BlockActorDataPacketHook>().unhook();
-    removeSchedule();
+    if (mIsEnabled) {
+        ll::memory::HookRegistrar<SignBlockTickHook, ChangeSignBlockHook, BlockActorDataPacketHook>().unhook();
+        removeSchedule();
+    }
 }
 
 } // namespace SignBlockPAPI

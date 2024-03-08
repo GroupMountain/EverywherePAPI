@@ -19,7 +19,21 @@ void initConfig() {
 
 std::string tr(std::string key, std::vector<std::string> data) { return Language->translate(key, data); }
 
-std::string trp(std::string key, std::vector<std::string> data, Player* pl) {
-    auto result = Language->translate(key, data);
-    return GMLIB::Server::PlaceholderAPI::translateString(result, pl);
+void enablePlugin() {
+    if (Config->getValue<bool>({"Translate", "Sign"}, true)) {
+        SignBlockPAPI::enable();
+    }
+    if (Config->getValue<bool>({"Translate", "Chat"}, true)) {
+        ChatPAPI::enable();
+    }
+}
+
+void disablePlugin() {
+    SignBlockPAPI::enable();
+    ChatPAPI::enable();
+}
+
+void reloadPlugin() {
+    disablePlugin();
+    enablePlugin();
 }

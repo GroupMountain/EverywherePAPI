@@ -11,12 +11,16 @@ std::unique_ptr<std::reference_wrapper<ll::plugin::NativePlugin>>
     selfPluginInstance; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 auto disable(ll::plugin::NativePlugin& /*self*/) -> bool {
-    SignBlockPAPI::disable();
+    disablePlugin();
     return true;
 }
 
 auto enable(ll::plugin::NativePlugin& /*self*/) -> bool {
-    SignBlockPAPI::enable();
+    enablePlugin();
+    RegisterCommand();
+    logger.info(tr("info.loaded"));
+    logger.info("{}: GroupMountain", tr("info.author"));
+    logger.info("{}: https://github.com/GroupMountain/EverywherePAPI", tr("info.repository"));
     return true;
 }
 
