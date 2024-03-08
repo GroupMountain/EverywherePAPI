@@ -29,11 +29,15 @@ void enablePlugin() {
 }
 
 void disablePlugin() {
-    SignBlockPAPI::enable();
-    ChatPAPI::enable();
+    SignBlockPAPI::disable();
+    ChatPAPI::disable();
 }
 
 void reloadPlugin() {
     disablePlugin();
+    Config->reload();
+    std::string languageCode = Config->getValue<std::string>({"language"}, "en_US");
+    Language->reloadAllLanguages();
+    Language->chooseLanguage(languageCode);
     enablePlugin();
 }
