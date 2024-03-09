@@ -10,7 +10,8 @@ void enable() {
     auto listener = ll::event::EventBus::getInstance().emplaceListener<ll::event::player::PlayerChatEvent>(
         [](ll::event::player::PlayerChatEvent& ev) {
             ev.message() = GMLIB::Server::PlaceholderAPI::translateString(ev.message(), &ev.self());
-        }
+        },
+        ll::event::EventPriority::High
     );
     mEventId   = listener->getId();
     mIsEnabled = true;
