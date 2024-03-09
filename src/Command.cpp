@@ -1,109 +1,75 @@
 #include "Global.h"
+#include <magic_enum.hpp>
 
 struct PapiParam {
-    //
+    enum class PAPIEnumList { list, reload } list;
+    enum class PAPIEnumInfo { info } info;
+    enum class PAPIEnumReg { unregister } unregister;
+    ll::command::Optional<std::string> plugin;
+    std::string                        papi;
 };
 
+
 void RegisterCommand() {
-    // Todo
-}
-
-/*
-void RegCommand()
-{
-    using ParamType = DynamicCommand::ParameterType;
-    auto command = DynamicCommand::createCommand("placeholder", tr("papi.command"), CommandPermissionLevel::GameMasters);
-    command->setAlias("papi");
-    auto& PAPIEnumList = command->setEnum("PAPIList", { "list","help","reload"});
-    auto& PAPIEnumInfo = command->setEnum("PAPIInfo", { "info"});
-    auto& PAPIEnumReg = command->setEnum("PAPIReg", { "unregister"});
-	
-    command->optional("PAPIPluginsNameEnum", ParamType::SoftEnum,command->setSoftEnum("PAPIPluginsNameList", {}));
-    command->mandatory("PAPINameEnum", ParamType::SoftEnum, command->setSoftEnum("PAPINameList", {}));
-	
-	
-    command->mandatory("PAPIEnum", ParamType::Enum, PAPIEnumList);
-    command->mandatory("PAPIEnum", ParamType::Enum, PAPIEnumInfo);
-    command->mandatory("PAPIEnum", ParamType::Enum, PAPIEnumReg);
-    command->mandatory("PAPIName", ParamType::String); 
-	
-
-    command->addOverload({ PAPIEnumList });
-    command->addOverload({ PAPIEnumInfo, "PAPIPluginsNameEnum" });
-    command->addOverload({ PAPIEnumReg, "PAPINameEnum" });
-	
-    command->setCallback([](DynamicCommand const& command, CommandOrigin const& origin, CommandOutput& output, std::unordered_map<std::string, DynamicCommand::Result>& results) {
-        auto action = results["PAPIEnum"].get<std::string>();
-        string str = "";
-        auto sp = origin.getPlayer();
-        switch (do_hash(action.c_str()))
-        {
-        case do_hash("list"): {
-            auto PAPIList = PlaceholderAPI::getPAPIPluginsList();
-            str += tr("papi.command.list");
-			int i = 0;
-            for (auto& papi : PAPIList) 
-            {
-                str += std::to_string(++i) +".§a" + papi + "§r\n";
+    auto& cmd = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
+        "placeholder",
+        tr("papi.command.description"),
+        CommandPermissionLevel::GameDirectors
+    );
+    ll::service::getCommandRegistry()->registerAlias("placeholder", "papi");
+    cmd.overload<PapiParam>()
+        .required("list")
+        .execute<[](CommandOrigin const& ori, CommandOutput& output, PapiParam const& param, ::Command const&) {
+            switch (param.list) {
+            case PapiParam::PAPIEnumList::list: {
+                auto PAPIList = GMLIB::Server::PlaceholderAPI::getPAPIPluginsList();
+                output.success(tr("papi.command.list"));
+                int i = 0;
+                for (auto& papi : PAPIList) {
+                    std::string out = std::to_string(++i) + ".§a" + papi + "§r";
+                    output.success(out);
+                }
+                return;
             }
-            output.success(str);
-            break;
-        }
-        
-        case do_hash("info"): {
-            auto list = PlaceholderAPI::getPAPIInfoList();
-            if (results["PAPIPluginsNameEnum"].isSet) {
-                auto PAPIName = results["PAPIPluginsNameEnum"].getEnumValue();
-                str += tr("papi.command.info", PAPIName);
+            case PapiParam::PAPIEnumList::reload: {
+                reloadPlugin();
+                return output.success(tr("papi.command.reload"));
+            }
+            default:
+                break;
+            }
+        }>();
+    cmd.overload<PapiParam>()
+        .required("info")
+        .optional("plugin")
+        .execute<[](CommandOrigin const& ori, CommandOutput& output, PapiParam const& param, ::Command const&) {
+            auto list = GMLIB::Server::PlaceholderAPI::getPAPIInfoList();
+            if (param.plugin.has_value()) {
+                auto PAPIName = param.plugin.value();
+                output.success(tr("papi.command.info", {PAPIName}));
                 int i = 0;
                 for (auto& papi : list) {
                     if (papi.getPluginName() == PAPIName) {
-                        str += std::to_string(++i) + ".§a%" + papi.mName + "%§r\n";
+                        output.success(std::to_string(++i) + ".§a%" + papi.getName() + "%§r");
                     }
                 }
-                output.success(str);
-            }
-            else {
-                str += tr("papi.command.infoall");
+            } else {
+                output.success(tr("papi.command.infoall"));
                 int i = 0;
                 for (auto& papi : list) {
-                    str += std::to_string(++i) + ".§a%" + papi.mName + "%§r\n";
+                    output.success(std::to_string(++i) + ".§a%" + papi.getName() + "%§r");
                 }
-                output.success(str);
             }
-            break;
-        }
-
-        case do_hash("unregister"): {
-            auto PAPIName = results["PAPINameEnum"].getEnumValue();
-            auto out = PlaceholderAPI::unRegisterPlaceholder(PAPIName);
-            if (out) {
-                output.success(BEPAPI + tr("papi.command.unregister.success", PAPIName));
+        }>();
+    cmd.overload<PapiParam>()
+        .required("unregister")
+        .required("papi")
+        .execute<[](CommandOrigin const& ori, CommandOutput& output, PapiParam const& param, ::Command const&) {
+            auto result = GMLIB::Server::PlaceholderAPI::unRegisterPlaceholder(param.papi);
+            if (result) {
+                return output.success(tr("papi.command.unregister.success", {param.papi}));
+            } else {
+                return output.error(tr("papi.command.unregister.fail", {param.papi}));
             }
-            else {
-                output.error(BEPAPI + tr("papi.command.unregister.fail", PAPIName));
-            }
-            break;
-        }
-        case do_hash("help"): {
-            output.success(tr("papi.command.help")+"\n\n§l§c@By §6DreamGuXiang&QingYu");
-            break;
-        }
-        case do_hash("reload"): {
-            Settings::LoadConfigFromJson(JsonFile);
-            Translation::load("plugins/BEPlaceholderAPI/lang/" + Settings::LangCode + ".json");
-            output.success(BEPAPI + tr("papi.command.reload"));
-            break;
-        }
-        default:
-            break;
-        }
-        });
-    auto cmd = DynamicCommand::setup(std::move(command));
-    Schedule::repeat([cmd] {
-        cmd->addSoftEnumValues("PAPIPluginsNameList", Helper::getPAPIPlugins());
-        cmd->addSoftEnumValues("PAPINameList", Helper::getPAPIInfoList());
-        }, 200);
+        }>();
 }
-
-*/
