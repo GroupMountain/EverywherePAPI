@@ -2,6 +2,9 @@
     "name": "${pluginName}",
     "entry": "${pluginFile}",
     "type": "native",
+    "author": "GroupMountain",
+    "description": "Show PlaceholderAPI anywhere you want.",
+    "version": "0.9.3",
     "dependencies": [
         {
             "name": "GMLIB"
