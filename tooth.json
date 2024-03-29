@@ -1,7 +1,7 @@
 {
     "format_version": 2,
     "tooth": "github.com/GroupMountain/EverywherePAPI",
-    "version": "0.9.3",
+    "version": "0.10.0",
     "info": {
         "name": "EverywherePAPI",
         "description": "Show placeholder anywhere you want.",
@@ -15,9 +15,9 @@
             "chat"
         ]
     },
-    "asset_url": "https://github.com/GroupMountain/EverywherePAPI/releases/download/v0.9.3/EverywherePAPI-windows-x64.zip",
+    "asset_url": "https://github.com/GroupMountain/EverywherePAPI/releases/download/v0.10.0/EverywherePAPI-windows-x64.zip",
     "dependencies": {
-        "github.com/GroupMountain/GMLIB": ">=0.9.6"
+        "github.com/GroupMountain/GMLIB": ">=0.10.0"
     },
     "files": {
         "place": [
