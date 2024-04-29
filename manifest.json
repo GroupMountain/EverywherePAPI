@@ -4,7 +4,7 @@
     "type": "native",
     "author": "GroupMountain",
     "description": "Show PlaceholderAPI anywhere you want.",
-    "version": "0.11.0",
+    "version": "0.12.0",
     "dependencies": [
         {
             "name": "GMLIB"

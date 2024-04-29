@@ -46,10 +46,10 @@ void updateAllClientSignBlocks() {
                     back->putString("Text", backplaceHolder);
                     front->putString("Text", frontplaceHolder);
                     GMLIB_BinaryStream bs;
+                    bs.writePacketHeader(MinecraftPacketIds::BlockActorData);
                     bs.writeBlockPos(pos);
                     bs.writeCompoundTag(*nbt);
-                    GMLIB::Server::NetworkPacket<56> pkt(bs.getAndReleaseData());
-                    pkt.sendTo(*pl);
+                    bs.sendTo(*pl);
                 }
             }
         }
@@ -65,10 +65,10 @@ void resendAllSignBlocks() {
             auto               signblock = (SignBlockActor*)ba;
             auto               nbt       = GMLIB_CompoundTag::getFromBlockActor(signblock);
             GMLIB_BinaryStream bs;
+            bs.writePacketHeader(MinecraftPacketIds::BlockActorData);
             bs.writeBlockPos(pos);
             bs.writeCompoundTag(*nbt);
-            GMLIB::Server::NetworkPacket<56> pkt(bs.getAndReleaseData());
-            pkt.sendToClients();
+            bs.sendToClients();
         }
     }
 }
