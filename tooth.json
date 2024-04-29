@@ -15,9 +15,9 @@
             "chat"
         ]
     },
-    "asset_url": "https://github.com/GroupMountain/EverywherePAPI/releases/download/v0.11.0/EverywherePAPI-windows-x64.zip",
+    "asset_url": "https://github.com/GroupMountain/EverywherePAPI/releases/download/v0.12.0/EverywherePAPI-windows-x64.zip",
     "dependencies": {
-        "github.com/GroupMountain/GMLIB": ">=0.10.0"
+        "github.com/GroupMountain/GMLIB": ">=0.12.1"
     },
     "files": {
         "place": [
