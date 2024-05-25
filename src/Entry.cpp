@@ -41,7 +41,10 @@ bool Entry::disable() {
     return true;
 }
 
-bool Entry::unload() { return true; }
+bool Entry::unload() {
+    getInstance().reset();
+    return true;
+}
 
 Config& Entry::getConfig() { return mConfig.value(); }
 
