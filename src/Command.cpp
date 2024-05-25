@@ -2,9 +2,6 @@
 #include <magic_enum.hpp>
 
 struct PapiParam {
-    enum class PAPIEnumList { list, reload } list;
-    enum class PAPIEnumInfo { info } info;
-    enum class PAPIEnumReg { unregister } unregister;
     ll::command::Optional<std::string> plugin;
     std::string                        papi;
 };
@@ -18,29 +15,19 @@ void RegisterCommand() {
     );
     ll::service::getCommandRegistry()->registerAlias("placeholder", "papi");
     cmd.overload<PapiParam>()
-        .required("list")
+        .text("list")
         .execute<[](CommandOrigin const& ori, CommandOutput& output, PapiParam const& param, ::Command const&) {
-            switch (param.list) {
-            case PapiParam::PAPIEnumList::list: {
-                auto PAPIList = GMLIB::Server::PlaceholderAPI::getPAPIPluginsList();
-                output.success(tr("papi.command.list"));
-                int i = 0;
-                for (auto& papi : PAPIList) {
-                    std::string out = std::to_string(++i) + ".§a" + papi + "§r";
-                    output.success(out);
-                }
-                return;
+            auto PAPIList = GMLIB::Server::PlaceholderAPI::getPAPIPluginsList();
+            output.success(tr("papi.command.list"));
+            int i = 0;
+            for (auto& papi : PAPIList) {
+                std::string out = std::to_string(++i) + ".§a" + papi + "§r";
+                output.success(out);
             }
-            case PapiParam::PAPIEnumList::reload: {
-                reloadPlugin();
-                return output.success(tr("papi.command.reload"));
-            }
-            default:
-                break;
-            }
+            return;
         }>();
     cmd.overload<PapiParam>()
-        .required("info")
+        .text("info")
         .optional("plugin")
         .execute<[](CommandOrigin const& ori, CommandOutput& output, PapiParam const& param, ::Command const&) {
             auto list = GMLIB::Server::PlaceholderAPI::getPAPIInfoList();
@@ -62,10 +49,10 @@ void RegisterCommand() {
             }
         }>();
     cmd.overload<PapiParam>()
-        .required("unregister")
+        .text("unregister")
         .required("papi")
         .execute<[](CommandOrigin const& ori, CommandOutput& output, PapiParam const& param, ::Command const&) {
-            auto result = GMLIB::Server::PlaceholderAPI::unRegisterPlaceholder(param.papi);
+            auto result = GMLIB::Server::PlaceholderAPI::unregisterPlaceholder(param.papi);
             if (result) {
                 return output.success(tr("papi.command.unregister.success", {param.papi}));
             } else {

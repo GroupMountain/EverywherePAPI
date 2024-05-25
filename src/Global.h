@@ -5,12 +5,8 @@
 
 extern ll::Logger logger;
 
-extern std::string tr(std::string key, std::vector<std::string> data = {});
+extern std::string tr(std::string const& key, std::vector<std::string> const& data = {});
 
-extern void initConfig();
-extern void enablePlugin();
-extern void disablePlugin();
-extern void reloadPlugin();
 extern void RegisterCommand();
 
 namespace SignBlockPAPI {

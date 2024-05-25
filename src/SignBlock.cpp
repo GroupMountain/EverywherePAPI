@@ -28,14 +28,14 @@ LL_TYPE_INSTANCE_HOOK(
 
 void updateAllClientSignBlocks() {
     for (auto& data : mSignBlockActorMap) {
-        auto bs  = GMLIB_Level::getLevel()->getBlockSource(data.second);
-        auto pos = data.first;
-        auto ba  = bs->getBlockEntity(pos);
+        auto& bs  = GMLIB_Level::getLevel()->getBlockSource(data.second);
+        auto  pos = data.first;
+        auto  ba  = bs.getBlockEntity(pos);
         if (ba) {
             auto signblock = (SignBlockActor*)ba;
             auto backText  = signblock->getMessage(SignTextSide::Back);
             auto frontText = signblock->getMessage(SignTextSide::Front);
-            auto nbt       = GMLIB_CompoundTag::getFromBlockActor(signblock)->clone();
+            auto nbt       = GMLIB_CompoundTag::getFromBlockActor(*signblock)->clone();
             auto back      = nbt->getCompound("BackText");
             auto front     = nbt->getCompound("FrontText");
             auto pls       = GMLIB_Level::getLevel()->getAllPlayers();
@@ -58,12 +58,12 @@ void updateAllClientSignBlocks() {
 
 void resendAllSignBlocks() {
     for (auto& data : mSignBlockActorMap) {
-        auto bs  = GMLIB_Level::getLevel()->getBlockSource(data.second);
-        auto pos = data.first;
-        auto ba  = bs->getBlockEntity(pos);
+        auto& bs  = GMLIB_Level::getLevel()->getBlockSource(data.second);
+        auto  pos = data.first;
+        auto  ba  = bs.getBlockEntity(pos);
         if (ba) {
             auto               signblock = (SignBlockActor*)ba;
-            auto               nbt       = GMLIB_CompoundTag::getFromBlockActor(signblock);
+            auto               nbt       = GMLIB_CompoundTag::getFromBlockActor(*signblock);
             GMLIB_BinaryStream bs;
             bs.writePacketHeader(MinecraftPacketIds::BlockActorData);
             bs.writeBlockPos(pos);
